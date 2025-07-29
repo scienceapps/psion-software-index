@@ -2,8 +2,10 @@
     --foreground-color: #000;
     --background-color: #fff;
     --secondary-background-color: #fff;
-    --tertiary-background-color: #eee;
-    --link-color: orange;
+    --tertiary-background-color: #fafafa;
+    --button-background-color: #eee;
+    --link-color: darkorange;
+    --vertical-spacing: 1rem;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -13,12 +15,16 @@
         --background-color: #171616;
         --secondary-background-color: rgb(33, 32, 33);
         --tertiary-background-color: #2b2b2b;
-        --link-color: orange;
+        --button-background-color: #2b2b2b;
+        --link-color: darkorange;
     }
 }
 
 body {
-    font-family: sans-serif;
+    font-family: Helvetica, sans-serif;
+    font-weight: 200;
+    font-size: 17px;
+    /* font-family: sans-serif; */
     text-align: center;
     margin: 0;
     transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
@@ -27,12 +33,12 @@ body {
 }
 
 p {
-    line-height: 1.5em;
+    line-height: 1.7em;
 }
 
 header nav {
     text-align: center;
-    font-weight: 300;
+    font-weight: 400;
 }
 
 header ul {
@@ -48,6 +54,7 @@ header ul li {
 
 header nav a {
     display: inline-block;
+    color: var(--foreground-color);
 }
 
 header > .icon {
@@ -56,8 +63,7 @@ header > .icon {
 }
 
 h1, h2, h3 {
-    font-family: 'SF Mono', SFMono-Regular, ui-monospace, 'DejaVu Sans Mono', Menlo, Consolas, monospace;
-    margin-bottom: 2rem;
+    margin-bottom: calc(2 * var(--vertical-spacing));
 }
 
 h1 {
@@ -139,9 +145,10 @@ table.statistics {
 /* Library */
 
 
-.sha, .uid {
+.sha, .uid, variant-hash {
     font-family: monospace;
     color: #ccc;
+    font-size: 13px;
 }
 
 .icon {
@@ -200,35 +207,24 @@ ul.applications > li > a img {
     text-align: center;
     font-family: monospace;
     color: #ccc;
+    font-size: 15px;
 }
 
-.readme {
-    padding-bottom: 1rem;
-    margin-bottom: 1rem;
-}
-
-a.install {
-    color: orange;
-    background-color: var(--tertiary-background-color);
-    font-weight: 600;
-    text-decoration: none;
-    padding: 0.6em 1em;
-    display: inline-block;
+a.download {
+    background-color: var(--button-background-color);
     border-radius: 2em;
-}
-
-.readme-contents {
-    white-space: pre-wrap;
-    font-family: monospace;
-    background-color: var(--tertiary-background-color);
-    border-radius: 0.5rem;
-    padding: 2rem;
-    margin-top: 1rem;
+    color: var(--link-color);
+    display: inline-block;
+    font-size: 15px;
+    font-weight: 400;
+    padding: 0.6em 1em;
+    text-decoration: none;
+    transition: background-color .3s ease-in-out;
 }
 
 .path {
-    font-family: monospace;
     word-break: break-all;
+    font-size: 15px;
 }
 
 ul.tags {
@@ -267,10 +263,64 @@ ul.tags li.database {
     background-color: rgba(0, 0, 255, 0.25);
 }
 
+ul.variants {
+    list-style: none;
+    padding: 0;
+}
+
+ul.variants > li {
+    margin-bottom: calc(2 * var(--vertical-spacing));
+}
+
+variant-header {
+    max-width: var(--content-width);
+    margin: auto;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 48px auto auto;
+    grid-gap: 1rem;
+}
+
+variant-icon {
+}
+
+variant-details {
+    font-weight: 400;
+}
+
+variant-hash {
+    display: block;
+}
+
+variant-actions {
+    text-align: right;
+}
+
+variant-title {
+    font-weight: 600;
+    display: block;
+}
+
+ul.sources {
+    width: 100%;
+    padding: 0;
+}
+
+ul.sources li {
+    list-style: none;
+    padding: 0.4rem;
+}
+
+ul.sources li:nth-child(odd) {
+    background: var(--tertiary-background-color);
+    transition: background-color .3s ease-in-out;
+}
+
 /* Dividers */
 
 .summary {
     border-bottom: 1px solid var(--tertiary-background-color);
+    transition: border-bottom .3s ease-in-out;
     padding-bottom: 1rem;
     margin-bottom: 1rem;
 }
