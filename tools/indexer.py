@@ -58,34 +58,6 @@ verbose = '--verbose' in sys.argv[1:] or '-v' in sys.argv[1:]
 logging.basicConfig(level=logging.DEBUG if verbose else logging.INFO, format="[%(levelname)s] %(message)s")
 
 
-LIBRARY_INDEXES = [
-    "library/epocgames",
-    "library/epocgraphics",
-    "library/epocmap",
-    "library/epocmisc",
-    "library/epocmoney",
-    "library/epocprog",
-    "library/epocutil",
-    "library/epocvault",
-    "library/geofox",
-    "library/msgsuite",
-    "library/pcba",
-    "library/psiwin",
-    "library/revogames",
-    "library/s3comms",
-    "library/s3games",
-    "library/s3graphics",
-    "library/s3mapping",
-    "library/s3misc",
-    "library/s3money",
-    "library/s3prog",
-    "library/s3units",
-    "library/s3util",
-    "library/s3vault",
-    "library/s7games",
-    "library/siena",
-]
-
 # TODO: Check if there are more languages.
 LANGUAGE_ORDER = ["en_GB", "en_US", "en_AU", "fr_FR", "de_DE", "it_IT", "nl_NL", "bg_BG", ""]
 
@@ -115,32 +87,6 @@ class Chdir(object):
 class DummyMetadataProvider(object):
 
     def summary_for(self, path):
-        return None
-
-
-# Perhaps it would be good to drop the metadata provider and allow it to all be added in post.
-class LibraryMetadataProvider(object):
-
-    def __init__(self, path):
-        self.path = path
-        self.descriptions = {}
-        for index_path in LIBRARY_INDEXES:
-            with open(os.path.join(path, index_path) + ".htm") as fh:
-                for line in fh.readlines():
-                    match = re.match(r"^(\S+)\s+(\d{2}/\d{2}/\d{2})\s+(.+)$", line)
-                    if not match:
-                        continue
-                    application_path = os.path.join(path, index_path, match.group(1)).lower()
-                    self.descriptions[application_path] = match.group(3)
-                    if not os.path.exists(application_path):
-                        logging.warning("WARN: Missing application path", application_path)
-
-    def summary_for(self, path):
-        directory = os.path.dirname(path).lower()
-        while directory != "/":
-            if directory in self.descriptions:
-                return self.descriptions[directory]
-            directory = os.path.dirname(directory)
         return None
 
 
@@ -267,7 +213,7 @@ class Program(object):
 class Release(object):
 
     # TODO: Make the UID optional and don't attempt to synthesize other identifiers at this stage.
-    def __init__(self, filename, size, reference, kind, identifier, sha256, name, version, icons, summary, readme, tags):
+    def __init__(self, filename, size, reference, kind, identifier, sha256, name, version, icons, readme, tags):
         self.filename = filename
         self.size = size
         self.reference = reference
@@ -277,7 +223,6 @@ class Release(object):
         self.name = name
         self.version = version
         self.icons = icons
-        self.summary = summary
         self.readme = readme
         self.tags = tags
 
@@ -300,8 +245,6 @@ class Release(object):
                           'sha256': icon.shasum} for icon in self.icons]
         if self.readme is not None:
             dict['readme'] = self.readme
-        if self.summary is not None:
-            dict['summary'] = self.summary
         return dict
 
     def write_assets(self, icons_path):
@@ -429,7 +372,6 @@ def import_installer(source, output_directory, reference, path, error_handler):
                 except Exception as e:
                     error_handler(aif_path, e)
 
-    summary = source.summary_for(path)
     readme = readme_for(path)
     sha256 = shasum(path)
     shutil.copyfile(path, os.path.join(output_directory, sha256))
@@ -442,7 +384,6 @@ def import_installer(source, output_directory, reference, path, error_handler):
                    name=select_name(info["name"]),
                    version=info["version"],
                    icons=icons,
-                   summary=summary,
                    readme=readme,
                    tags=tags)
 
@@ -489,7 +430,6 @@ def import_source(source, output_directory, error_handler=None):
                 except BaseException as e:
                     error_handler(file_path, e)
                     logging.warning("Failed to parse APP as AIF with message '%s'", e)
-            summary = source.summary_for(file_path)
             readme = readme_for(file_path)
             sha256 = shasum(file_path)
             shutil.copyfile(file_path, os.path.join(output_directory, sha256))
@@ -502,7 +442,6 @@ def import_source(source, output_directory, error_handler=None):
                               name=app_name,
                               version="Unknown",
                               icons=icons,
-                              summary=summary,
                               readme=readme,
                               tags=tags)
             apps.append(release)
